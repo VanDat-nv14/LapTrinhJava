@@ -10,11 +10,12 @@ import java.util.Map;
 @Service
 public class BookService {
     private final List<Book> books = new ArrayList<>();
+    private int nextId = 6; // Sau 5 sách mẫu
 
     public BookService() {
-        // Dữ liệu mẫu sẵn khi khởi động
-        books.add(new Book(1, "Tên nhẹ về đến", "Gabriel García Márquez"));
-        books.add(new Book(2, "Nhà giả kim", "Paulo Coelho"));
+        // Dữ liệu mẫu sẵn khi khởi động (giống demo)
+        books.add(new Book(1, "Spring boot", "Huy Cương"));
+        books.add(new Book(2, "Spring Boot V2", "Anh"));
         books.add(new Book(3, "Đắc nhân tâm", "Dale Carnegie"));
         books.add(new Book(4, "Lập trình Java", "Nguyễn Văn A"));
         books.add(new Book(5, "Spring Boot in Action", "Craig Walls"));
@@ -32,6 +33,9 @@ public class BookService {
     }
 
     public void addBook(Book book) {
+        if (book.getId() == 0) {
+            book.setId(nextId++);
+        }
         books.add(book);
     }
 
@@ -43,6 +47,11 @@ public class BookService {
                     book.setTitle(updatedBook.getTitle());
                     book.setAuthor(updatedBook.getAuthor());
                 });
+    }
+
+    /** Gọi từ form sửa (gửi cả book có id). */
+    public void updateBook(Book book) {
+        updateBook(book.getId(), book);
     }
 
     public void deleteBook(int id) {

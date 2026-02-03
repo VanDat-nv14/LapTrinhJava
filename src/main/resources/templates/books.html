@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sách</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        h1 { margin-bottom: 16px; }
+        .add-link { display: inline-block; margin-bottom: 16px; color: #6f42c1; text-decoration: none; font-weight: 500; }
+        .add-link:hover { text-decoration: underline; }
+        .book-table { border-collapse: collapse; width: 100%; max-width: 800px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .book-table th, .book-table td { border: 1px solid #ddd; padding: 12px 16px; text-align: left; }
+        .book-table thead th { background: #f5f5f5; font-weight: 600; }
+        .book-table tbody tr:nth-child(even) { background: #fafafa; }
+        .book-table tbody tr:hover { background: #f0f0f0; }
+        .book-table .action-cell { white-space: nowrap; }
+        .book-table .action-cell a { color: #0066cc; text-decoration: none; margin-right: 12px; }
+        .book-table .action-cell a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Danh sách sách</h1>
+    <a class="add-link" th:href="@{/books/add}">Thêm sách mới</a>
+
+    <table class="book-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tiêu đề</th>
+                <th>Tác giả</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="book : ${books}">
+                <td th:text="${book.id}"></td>
+                <td th:text="${book.title}"></td>
+                <td th:text="${book.author}"></td>
+                <td class="action-cell">
+                    <a th:href="@{/books/edit/{id}(id=${book.id})}">Sửa</a>
+                    <a th:href="@{/books/delete/{id}(id=${book.id})}">Xóa</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
