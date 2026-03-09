@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Danh sách sản phẩm</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <h2 class="fw-bold mb-1 text-dark" style="letter-spacing: -0.5px;">Quản lý sản phẩm</h2>
+                <p class="text-muted mb-0">Xem, thêm, sửa, xoá danh sách sản phẩm của cửa hàng</p>
+            </div>
+            <a th:href="@{/products/create}" class="btn btn-primary shadow-sm">
+                <i class="fa-solid fa-plus"></i> <span class="ms-1">Thêm sản phẩm mới</span>
+            </a>
+        </div>
+
+        <!-- Main Card -->
+        <div class="glass-card mb-5">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 custom-table">
+                    <thead style="background: #f8fafc;">
+                        <tr>
+                            <th class="ps-4 py-3 text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px; width: 80px;">ID</th>
+                            <th class="py-3 text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px; width: 100px;">Hình ảnh</th>
+                            <th class="py-3 text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Sản phẩm</th>
+                            <th class="py-3 text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px; width: 150px;">Giá bán</th>
+                            <th class="py-3 text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 0.5px; width: 180px;">Danh mục</th>
+                            <th class="pe-4 py-3 text-muted text-uppercase fw-semibold text-end" style="font-size: 0.75rem; letter-spacing: 0.5px; width: 120px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="product : ${listproduct}" class="table-row-hover">
+                            <td class="ps-4 text-muted fw-medium fs-6">#<span th:text="${product.id}"></span></td>
+                            <td>
+                                <div class="img-thumbnail-wrapper">
+                                    <img th:if="${product.image}" th:src="@{/images/{name}(name=${product.image})}" alt="SP"/>
+                                    <div th:unless="${product.image}" class="img-placeholder">
+                                        <i class="fa-regular fa-image"></i>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <h6 class="mb-0 fw-bold text-dark fs-6" th:text="${product.name}"></h6>
+                            </td>
+                            <td>
+                                <span class="price-badge">
+                                    <span th:text="${#numbers.formatInteger(product.price, 3, 'POINT')}"></span> <small>₫</small>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="category-badge" th:text="${product.category != null ? product.category.name : 'Chưa phân loại'}"></span>
+                            </td>
+                            <td class="pe-4 text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a th:href="@{/products/edit/{id}(id=${product.id})}" class="action-btn action-edit" title="Chỉnh sửa">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <a th:href="@{/products/delete/{id}(id=${product.id})}" class="action-btn action-delete" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này? Thao tác không thể hoàn tác.');" title="Xóa">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Empty State -->
+                        <tr th:if="${#lists.isEmpty(listproduct)}">
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state">
+                                    <div class="empty-icon mb-3">
+                                        <i class="fa-solid fa-box-open"></i>
+                                    </div>
+                                    <h5 class="fw-bold text-dark mb-2">Chưa có sản phẩm nào</h5>
+                                    <p class="text-muted mb-4">Hãy bắt đầu thêm sản phẩm đầu tiên vào cửa hàng của bạn.</p>
+                                    <a th:href="@{/products/create}" class="btn btn-primary px-4 shadow-sm">
+                                        <i class="fa-solid fa-plus"></i> Thêm sản phẩm
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <style>
+            /* Table Styling */
+            .custom-table th {
+                border-bottom: 2px solid var(--border-color);
+            }
+            .custom-table td {
+                vertical-align: middle;
+                border-bottom: 1px solid var(--border-color);
+                transition: background-color 0.2s ease;
+            }
+            .table-row-hover:hover td {
+                background-color: rgba(79, 70, 229, 0.02);
+            }
+
+            /* Thumbnail */
+            .img-thumbnail-wrapper {
+                width: 60px;
+                height: 60px;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+                border: 1px solid rgba(0,0,0,0.05);
+                background: #f8fafc;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .img-thumbnail-wrapper img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+            .table-row-hover:hover .img-thumbnail-wrapper img {
+                transform: scale(1.05);
+            }
+            .img-placeholder {
+                color: #94a3b8;
+                font-size: 1.25rem;
+            }
+
+            /* Badges */
+            .price-badge {
+                display: inline-block;
+                background: rgba(16, 185, 129, 0.1);
+                color: #059669;
+                font-weight: 700;
+                padding: 0.35rem 0.75rem;
+                border-radius: 8px;
+            }
+            .category-badge {
+                display: inline-block;
+                background: #f1f5f9;
+                color: #475569;
+                font-size: 0.85rem;
+                font-weight: 500;
+                padding: 0.35rem 0.75rem;
+                border-radius: 99px;
+                border: 1px solid #e2e8f0;
+            }
+
+            /* Action Buttons */
+            .action-btn {
+                width: 36px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+                transition: all 0.2s ease;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                color: #64748b;
+            }
+            .action-edit:hover {
+                background: var(--primary-color);
+                color: white;
+                border-color: var(--primary-color);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+            }
+            .action-delete:hover {
+                background: #ef4444;
+                color: white;
+                border-color: #ef4444;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+            }
+
+            /* Empty State */
+            .empty-icon {
+                font-size: 4rem;
+                color: #cbd5e1;
+            }
+        </style>
+    </div>
+</body>
+</html>

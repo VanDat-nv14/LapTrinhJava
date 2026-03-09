@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Sửa sản phẩm</title>
+</head>
+<body>
+    <div layout:fragment="content" class="container body-content px-3" style="max-width: 800px;">
+        <!-- Khung trang: Sửa sản phẩm -->
+        <div class="frame-page">
+            <div class="frame-header d-flex align-items-center gap-3">
+                <a th:href="@{/products}" class="btn btn-light rounded-circle text-muted p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; transition: all 0.2s;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <h1 class="frame-title mb-0">Cập nhật sản phẩm</h1>
+            </div>
+            <div class="frame-body">
+                <div class="alert alert-warning border-0 bg-warning bg-opacity-10 text-dark d-flex align-items-center gap-3 rounded-3 mb-4">
+                    <i class="fa-solid fa-pen-nib fs-4 text-warning"></i>
+                    <div>
+                        <strong class="d-block mb-1">Chỉnh sửa thông tin</strong>
+                        <span class="small opacity-75">Thay đổi chi tiết bên dưới. Để trống ảnh nếu muốn giữ nguyên bức ảnh hiện tại.</span>
+                    </div>
+                </div>
+                
+                <form th:action="@{/products/edit}" th:object="${product}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" th:field="*{id}"/>
+                    <div class="row g-4">
+                        <div class="col-lg-8 col-md-7">
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-bold text-dark">Tên sản phẩm <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-box"></i></span>
+                                    <input class="form-control border-start-0 ps-0 form-control-lg fs-6" type="text" th:field="*{name}" id="name" placeholder="Nhập tên sản phẩm"/>
+                                </div>
+                                <div class="validation-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="category" class="form-label fw-bold text-dark">Danh mục <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-tags"></i></span>
+                                    <select th:field="*{category.id}" class="form-select border-start-0 ps-0 form-control-lg fs-6" id="category" name="category.id">
+                                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                                    </select>
+                                </div>
+                                <div class="validation-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="price" class="form-label fw-bold text-dark">Đơn giá (VNĐ) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-dong-sign"></i></span>
+                                    <input class="form-control border-start-0 ps-0 form-control-lg fs-6 fw-bold text-success" type="number" th:field="*{price}" id="price" placeholder="0" min="1"/>
+                                </div>
+                                <div class="validation-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-5">
+                            <div class="card border border-light-subtle shadow-sm h-100 rounded-4 overflow-hidden">
+                                <div class="card-header bg-light border-bottom-0 py-3">
+                                    <label class="form-label fw-bold text-dark mb-0"><i class="fa-regular fa-image me-2 text-primary"></i> Hình ảnh sản phẩm</label>
+                                </div>
+                                <div class="card-body bg-light bg-opacity-50 text-center p-3 d-flex flex-column align-items-center justify-content-center border-top border-dashed border-secondary border-opacity-25" style="border-style: dashed !important; border-width: 2px !important;">
+                                    <div th:if="${product.image}" class="mb-3">
+                                        <img th:src="@{/images/{name}(name=${product.image})}" class="rounded shadow-sm object-fit-cover border" style="height: 100px; width: 100px;" alt="Ảnh hiện tại"/>
+                                        <p class="small text-muted mt-2 mb-0"><i class="fa-solid fa-check text-success"></i> Đang sử dụng ảnh này</p>
+                                    </div>
+                                    <div th:unless="${product.image}" class="mb-3">
+                                        <i class="fa-solid fa-cloud-arrow-up text-primary opacity-50 mb-2" style="font-size: 2.5rem;"></i>
+                                        <p class="text-muted small mb-0">Chưa có hình ảnh</p>
+                                    </div>
+                                    <input class="form-control form-control-sm w-100" type="file" id="image" name="imageProduct" accept="image/png,image/jpeg,image/jpg,image/webp"/>
+                                    <p class="text-muted small mt-2 mb-0" style="font-size: 0.75rem;">Chọn ảnh mới để thay thế ảnh hiện tại.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4 border-secondary border-opacity-25"/>
+                    <div class="d-flex justify-content-end gap-3">
+                        <a th:href="@{/products}" class="btn btn-light px-4 py-2 fw-medium border shadow-sm">
+                            <i class="fa-solid fa-xmark me-1"></i> Hủy bỏ
+                        </a>
+                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <style>
+            .input-group-text { border-color: var(--border-color); }
+            .form-control:focus, .form-select:focus { border-color: var(--primary-color) !important; }
+            .input-group:focus-within .input-group-text { border-color: var(--primary-color); color: var(--primary-color) !important; }
+            .input-group:focus-within .form-control, .input-group:focus-within .form-select { border-color: var(--primary-color); }
+        </style>
+    </div>
+</body>
+</html>
