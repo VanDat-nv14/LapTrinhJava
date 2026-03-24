@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Đăng ký tài khoản</title>
+</head>
+<body>
+    <div layout:fragment="content" class="container body-content px-3" style="max-width: 520px;">
+        <div class="frame-page">
+            <div class="frame-header d-flex align-items-center gap-3">
+                <a th:href="@{/login}" class="btn btn-light rounded-circle text-muted p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <h1 class="frame-title mb-0">Đăng ký</h1>
+            </div>
+            <div class="frame-body">
+                <div class="alert alert-danger border-0" th:if="${#fields.hasGlobalErrors()}">
+                    <p class="mb-0" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></p>
+                </div>
+
+                <form th:action="@{/register}" th:object="${registerForm}" method="post" class="needs-validation">
+                    <div class="mb-3">
+                        <label for="loginName" class="form-label fw-bold">Tên đăng nhập</label>
+                        <input class="form-control form-control-lg" type="text" th:field="*{loginName}" id="loginName" autocomplete="username"/>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('loginName')}" th:errors="*{loginName}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-bold">Mật khẩu</label>
+                        <input class="form-control form-control-lg" type="password" th:field="*{password}" id="password" autocomplete="new-password"/>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="confirmPassword" class="form-label fw-bold">Xác nhận mật khẩu</label>
+                        <input class="form-control form-control-lg" type="password" th:field="*{confirmPassword}" id="confirmPassword" autocomplete="new-password"/>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                    </div>
+                    <div class="text-danger small mb-3" th:if="${#fields.hasErrors('passwordMatch')}" th:errors="*{passwordMatch}"></div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm">
+                        <i class="fa-solid fa-user-plus me-2"></i> Tạo tài khoản
+                    </button>
+                </form>
+                <p class="text-center text-muted mt-4 mb-0">
+                    Đã có tài khoản? <a th:href="@{/login}">Đăng nhập</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

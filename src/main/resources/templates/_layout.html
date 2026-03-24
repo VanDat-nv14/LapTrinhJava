@@ -192,14 +192,19 @@
                         </a>
                     </li>
                 </ul>
-                <form class="d-flex align-items-center mt-3 mt-lg-0 me-3" role="search" th:action="@{/products}" th:method="get">
+                <form class="d-flex align-items-center mt-3 mt-lg-0 me-3" role="search" th:action="@{/products}" method="get">
                     <div class="search-wrapper">
                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                        <input class="form-control search-input" type="search" name="q" placeholder="Tìm kiếm sản phẩm..." autocomplete="off"/>
+                        <input class="form-control search-input" type="search" name="q" th:value="${param.q != null and !#lists.isEmpty(param.q) ? param.q[0] : ''}" placeholder="Tìm kiếm sản phẩm..." autocomplete="off"/>
                     </div>
                 </form>
 
                 <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" th:href="@{/cart}">
+                            <i class="fa-solid fa-cart-shopping"></i> Giỏ hàng
+                        </a>
+                    </li>
                     <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa-solid fa-user-circle fs-5"></i> <span sec:authentication="name">User</span>
@@ -213,6 +218,11 @@
                                 </form>
                             </li>
                         </ul>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" th:href="@{/register}">
+                            <i class="fa-solid fa-user-plus"></i> Đăng ký
+                        </a>
                     </li>
                     <li class="nav-item" sec:authorize="!isAuthenticated()">
                         <a class="nav-link btn btn-outline-light rounded-pill px-3 py-1 ms-2" th:href="@{/login}" style="border: 1px solid rgba(255,255,255,0.5);">

@@ -2,6 +2,9 @@ package phattrienungdung2ee.webbanhang.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import phattrienungdung2ee.webbanhang.model.Product;
@@ -23,8 +26,30 @@ public class ProductService {
     @Value("${app.upload-dir:upload-dir}")
     private String uploadDir;
 
+    public static final int PAGE_SIZE = 5;
+
     public List<Product> getAll() {
         return productRepository.findAll();
+    }
+
+    public Page<Product> search(String q, Integer categoryId, String sort, int page) {
+        Sort sortObj = "priceDesc".equalsIgnoreCase(sort != null ? sort : "")
+                ? Sort.by("price").descending()
+                : Sort.by("price").ascending();
+        int pageIndex = Math.max(0, page);
+        PageRequest pageable = PageRequest.of(pageIndex, PAGE_SIZE, sortObj);
+        boolean hasQ = q != null && !q.trim().isEmpty();
+        boolean hasCat = categoryId != null && categoryId > 0;
+        if (hasQ && hasCat) {
+            return productRepository.findByNameContainingIgnoreCaseAndCategory_Id(q.trim(), categoryId, pageable);
+        }
+        if (hasQ) {
+            return productRepository.findByNameContainingIgnoreCase(q.trim(), pageable);
+        }
+        if (hasCat) {
+            return productRepository.findByCategory_Id(categoryId, pageable);
+        }
+        return productRepository.findAll(pageable);
     }
 
     public Product get(int id) {

@@ -2,11 +2,13 @@ package phattrienungdung2ee.webbanhang.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 import phattrienungdung2ee.webbanhang.model.Category;
 import phattrienungdung2ee.webbanhang.model.Product;
 import phattrienungdung2ee.webbanhang.service.CategoryService;
@@ -23,9 +25,46 @@ public class ProductController {
     private CategoryService categoryService;
 
     @GetMapping
-    public String index(Model model) {
-        model.addAttribute("listproduct", productService.getAll());
+    public String index(Model model,
+                        @RequestParam(required = false) String q,
+                        @RequestParam(name = "categoryId", required = false) String categoryIdParam,
+                        @RequestParam(required = false, defaultValue = "priceAsc") String sort,
+                        @RequestParam(required = false, defaultValue = "0") int page) {
+        Integer categoryId = null;
+        if (categoryIdParam != null && !categoryIdParam.isBlank()) {
+            try {
+                int cid = Integer.parseInt(categoryIdParam.trim());
+                if (cid > 0) {
+                    categoryId = cid;
+                }
+            } catch (NumberFormatException ignored) {
+                // ignore invalid categoryId
+            }
+        }
+        Page<Product> productPage = productService.search(q, categoryId, sort, page);
+        model.addAttribute("productPage", productPage);
+        model.addAttribute("listproduct", productPage.getContent());
+        model.addAttribute("categories", categoryService.getAll());
+        model.addAttribute("filterQ", q != null ? q : "");
+        model.addAttribute("filterCategoryId", categoryId);
+        model.addAttribute("filterSort", sort);
+        model.addAttribute("filterPage", page);
+        model.addAttribute("productsPrevUrl", buildProductsListUrl(q, categoryId, sort, page - 1));
+        model.addAttribute("productsNextUrl", buildProductsListUrl(q, categoryId, sort, page + 1));
         return "product/products";
+    }
+
+    private static String buildProductsListUrl(String q, Integer categoryId, String sort, int page) {
+        UriComponentsBuilder b = UriComponentsBuilder.fromPath("/products");
+        if (q != null && !q.isBlank()) {
+            b.queryParam("q", q);
+        }
+        if (categoryId != null && categoryId > 0) {
+            b.queryParam("categoryId", categoryId);
+        }
+        b.queryParam("sort", sort != null ? sort : "priceAsc");
+        b.queryParam("page", Math.max(0, page));
+        return b.encode().build().toUriString();
     }
 
     @GetMapping("/create")
